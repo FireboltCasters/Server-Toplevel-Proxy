@@ -33,6 +33,8 @@ networks:
     external: true
 ```
 
+If you want your service to get rid of the subdirectory (in this example /api), then you can also add: ```VIRTUAL_DEST=/``` so that your service gets the subdirectory removed. 
+
 ## Documentation
 
 This project is setup by following the tutorial from the original developers.
