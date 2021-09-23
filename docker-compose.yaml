@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  nginx-proxy:
+    env_file: .env
+    image: nginxproxy/nginx-proxy:dev
+    ports:
+      - "80:80"
+    restart: always
+    logging:
+      driver: local #or "none" or "local"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro # allow to read running dockers
+      #- ./nginx/test:/etc/nginx/conf.d # to see the config output
+    networks:
+      - reverse-proxy
+
+networks:
+  reverse-proxy:
+    name: topDomainProxy
