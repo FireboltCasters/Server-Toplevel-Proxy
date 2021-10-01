@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
 
@@ -6,18 +6,53 @@ services:
     container_name: outer
     env_file: .env
     image: nginxproxy/nginx-proxy:dev
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy=true"
     ports:
       - "80:80"
-      #- "443:443"
+      - "443:443"
     restart: always
     environment:
-      - DEFAULT_HOST=outer.bar.com
+      #- LETSENCRYPT_HOST=se-services.informatik.uos.de
+      #- DEFAULT_HOST=outer.bar.com
+      - DEFAULT_HOST=se-services.informatik.uos.de
+      - DHPARAM_GENERATION=false
     logging:
       driver: local #or "none" or "local"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro # allow to read running dockers
       #- ./nginx/test:/etc/nginx/conf.d # to see the config output
-      - ./Proxy/conf.d/unrestricted_size.conf:/etc/nginx/conf.d/unrestricted_size.conf
+      #- ./extraVolumes/certs:/etc/nginx/certs:ro
+      #- ./extraVolumes/vhosts:/etc/nginx/vhost.d
+      #- ./extraVolumes/html:/usr/share/nginx/html
+      - ./zerossl/certificate.crt:/etc/nginx/certs/se-services.informatik.uos.de.crt:ro
+      - ./zerossl/private.key:/etc/nginx/certs/se-services.informatik.uos.de.key:ro
+    networks:
+      - reverse-proxy
+
+#  letsencrypt:
+#    image: jrcs/letsencrypt-nginx-proxy-companion
+#    environment:
+#    ### ToDo: Change to your e-mail address
+#      - DEFAULT_EMAIL=nibaumgartne@uos.de
+#      - NGINX_PROXY_CONTAINER=outer
+#    volumes_from:
+#      - outer
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - ./extraVolumes/certs:/etc/nginx/certs:rw
+#    restart: always
+#    networks:
+#      - reverse-proxy
+
+  app:
+    container_name: outer_app
+    image: jwilder/whoami
+    environment:
+      - VIRTUAL_HOST=se-services.informatik.uos.de
+      #- VIRTUAL_HOST=outer.bar.com
+      - VIRTUAL_PATH=/whoami
+      #- LETSENCRYPT_HOST=se-services.informatik.uos.de
     networks:
       - reverse-proxy
 
