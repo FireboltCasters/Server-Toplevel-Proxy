@@ -10,12 +10,12 @@ services:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy=true"
     ports:
       - "80:80"
-      - "443:443"
+      #- "443:443"
     restart: always
     environment:
       #- LETSENCRYPT_HOST=se-services.informatik.uos.de
       #- DEFAULT_HOST=outer.bar.com
-      - DEFAULT_HOST=se-services.informatik.uos.de
+      - DEFAULT_HOST=${HOST}
       - DHPARAM_GENERATION=false
     logging:
       driver: local #or "none" or "local"
@@ -25,8 +25,8 @@ services:
       #- ./extraVolumes/certs:/etc/nginx/certs:ro
       #- ./extraVolumes/vhosts:/etc/nginx/vhost.d
       #- ./extraVolumes/html:/usr/share/nginx/html
-      - ./zerossl/certificate.crt:/etc/nginx/certs/se-services.informatik.uos.de.crt:ro
-      - ./zerossl/private.key:/etc/nginx/certs/se-services.informatik.uos.de.key:ro
+      #- ./zerossl/certificate.crt:/etc/nginx/certs/se-services.informatik.uos.de.crt:ro
+      #- ./zerossl/private.key:/etc/nginx/certs/se-services.informatik.uos.de.key:ro
     networks:
       - reverse-proxy
 
@@ -48,10 +48,12 @@ services:
   app:
     container_name: outer_app
     image: jwilder/whoami
+    env_file: .env
     environment:
-      - VIRTUAL_HOST=se-services.informatik.uos.de
+      - VIRTUAL_HOST=${HOST}
       #- VIRTUAL_HOST=outer.bar.com
       - VIRTUAL_PATH=/whoami
+      - VIRTUAL_DEST=/
       #- LETSENCRYPT_HOST=se-services.informatik.uos.de
     networks:
       - reverse-proxy
