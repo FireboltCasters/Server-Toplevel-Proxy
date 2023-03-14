@@ -21,6 +21,7 @@ services:
       driver: local #or "none" or "local"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro # allow to read running dockers
+      - ./Proxy/conf.d/unrestricted_size.conf:/etc/nginx/conf.d/unrestricted_size.conf
       #- ./nginx/test:/etc/nginx/conf.d # to see the config output
       #- ./extraVolumes/certs:/etc/nginx/certs:ro
       #- ./extraVolumes/vhosts:/etc/nginx/vhost.d
@@ -29,21 +30,6 @@ services:
       #- ./zerossl/private.key:/etc/nginx/certs/se-services.informatik.uos.de.key:ro
     networks:
       - reverse-proxy
-
-#  letsencrypt:
-#    image: jrcs/letsencrypt-nginx-proxy-companion
-#    environment:
-#    ### ToDo: Change to your e-mail address
-#      - DEFAULT_EMAIL=nibaumgartne@uos.de
-#      - NGINX_PROXY_CONTAINER=outer
-#    volumes_from:
-#      - outer
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock:ro
-#      - ./extraVolumes/certs:/etc/nginx/certs:rw
-#    restart: always
-#    networks:
-#      - reverse-proxy
 
   app:
     container_name: outer_app
