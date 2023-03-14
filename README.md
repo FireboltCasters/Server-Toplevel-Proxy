@@ -7,11 +7,16 @@ When you want to deploy multiple services and you want them to be reached from o
 
 ## Configuration
 
-1. Start the nginx-proxy with this ```docker-compose.yaml``` (```> docker-compose up```).
+- open ```.env``` and configure your host adress or leave it for development.
+
+## Start
+
+- Start the nginx-proxy with this ```docker-compose.yaml``` (```> docker-compose up```).
 
 
-2. Register your service. The proxy will listen on new added containers in the network.
+## Register your service. 
 
+The proxy will listen on new added containers in the network.
 If you want to add your container to the Proxy its very simple. You can also see an example in the folder: ```behindProxyTest```
 
 An example for your ```docker-compose.yaml```

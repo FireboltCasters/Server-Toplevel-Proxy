@@ -37,10 +37,9 @@ services:
     env_file: .env
     environment:
       - VIRTUAL_HOST=${HOST}
-      #- VIRTUAL_HOST=outer.bar.com
+      - LETSENCRYPT_HOST=${HOST}
       - VIRTUAL_PATH=/whoami
       - VIRTUAL_DEST=/
-      #- LETSENCRYPT_HOST=se-services.informatik.uos.de
     networks:
       - reverse-proxy
 
