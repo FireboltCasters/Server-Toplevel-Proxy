@@ -5,17 +5,17 @@ services:
   outer:
     container_name: outer
     env_file: .env
-    image: nginxproxy/nginx-proxy:dev
+    build: .
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy=true"
     ports:
       - "80:80"
-      #- "443:443"
+      - "443:443"
     restart: always
     environment:
       #- LETSENCRYPT_HOST=se-services.informatik.uos.de
       #- DEFAULT_HOST=outer.bar.com
-      - DEFAULT_HOST=${HOST}
+      - DEFAULT_HOST=${MYHOST}
       - DHPARAM_GENERATION=false
     logging:
       driver: local #or "none" or "local"
@@ -38,7 +38,8 @@ services:
       - outer
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      #- ./extraVolumes/certs:/etc/nginx/certs:rw
+      - ./extraVolumes/certs:/etc/nginx/certs:rw
+      - ./extraVolumes/vhosts:/etc/nginx/vhost.d:rw
       - ./acme:/etc/acme.sh
     restart: always
     networks:
@@ -49,9 +50,35 @@ services:
     image: jwilder/whoami
     env_file: .env
     environment:
-      - VIRTUAL_HOST=${HOST}
-      - LETSENCRYPT_HOST=${HOST}
-      - VIRTUAL_PATH=/whoami
+      - VIRTUAL_HOST=${MYHOST}
+      - LETSENCRYPT_HOST=${MYHOST}
+      - VIRTUAL_PATH=/ping/
+      - VIRTUAL_DEST=/
+    networks:
+      - reverse-proxy
+
+  redirect:
+    image: morbz/docker-web-redirect
+    env_file: .env
+    restart: always
+    environment:
+      - VIRTUAL_HOST=${MYHOST}
+      - VIRTUAL_PATH=/
+      - VIRTUAL_DEST=/
+      - REDIRECT_TARGET=${MYHOST}/homepage/ # Just /homepage without ending with a / will result in infinite redirects
+      # For more see: https://serverfault.com/questions/821997/nginx-reverse-proxy-too-many-redirections
+      # Also the - VIRTUAL_PATH=/ping/ must end with a / too
+    networks:
+      - reverse-proxy
+
+  redirect_catch:
+    container_name: redirect_catch
+    image: jwilder/whoami
+    env_file: .env
+    environment:
+      - VIRTUAL_HOST=${MYHOST}
+      - LETSENCRYPT_HOST=${MYHOST}
+      - VIRTUAL_PATH=/homepage/homepage/
       - VIRTUAL_DEST=/
     networks:
       - reverse-proxy
