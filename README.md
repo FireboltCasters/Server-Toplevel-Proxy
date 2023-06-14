@@ -40,6 +40,15 @@ networks:
 
 If you want your service to get rid of the subdirectory (in this example /api), then you can also add: ```VIRTUAL_DEST=/``` so that your service gets the subdirectory removed. 
 
+## Troubleshooting
+`ERROR: The Compose file './docker-compose.yml' is invalid because:
+networks.frontend value Additional properties are not allowed ('name' was unexpected)`
+
+https://stackoverflow.com/questions/58155523/unable-to-give-network-name-in-docker-compose
+curl -L https://github.com/docker/compose/releases/download/1.28.5/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+
 ## Documentation
 
 This project is setup by following the tutorial from the original developers.
